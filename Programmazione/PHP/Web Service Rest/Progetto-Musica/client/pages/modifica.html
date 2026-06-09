@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8">
+    <title>Modifica Canzone</title>
+  </head>
+
+  <body>
+    <h1>Modifica Canzone</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <form id = "form-modifica">
+      <input type = "hidden" id = "canzone-id">
+      <label>Titolo <input type = "text" id = "titolo" required></label><br />
+      <label>Anno: <input type = "number" id = "anno" required></label><br />
+      <label>Cantante <br /><select id = "cantante-id" required></select></label><br />
+      <label>Autore <br /><select id = "autore-id" required></select></label><br /><br />
+      <button type = "submit">Aggiorna</button>
+    </form>
+
+    <script>
+      const API = 'http://localhost/Progetto-Musica/api/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_select() {
+        try {
+          let response = await fetch(`${API}/canzoni`);
+          let json = await response.json();
+          const selectCantante = document.getElementById("cantante-id");
+          const selectAutore = document.getElementById("autore-id");
+          selectCantante.innerHTML = '<option value = "">Seleziona Cantante</option>';
+          selectAutore.innerHTML = '<option value = "">Seleziona Autore</option>';
+          json.data.forEach(canzone => {
+            selectCantante.innerHTML += `<option value = "${canzone.idCantante}">${canzone.nomeCantante}</option>`;
+            selectAutore.innerHTML += `<option value = "${canzone.idAutore}">${canzone.nomeAutore}</option>`;
+          });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      }
+
+      async function carica_canzone() {
+        if (!id) {
+          alert('ID Canzone non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/canzoni/${id}`);
+          const json = await response.json();
+          if (!json.success) {
+            alert('Canzone non Trovata');
+            return;
+          }
+          const canzone = json.data;
+          document.getElementById('titolo').value = canzone.titoloCanz;
+          document.getElementById('anno').value = canzone.anno;
+          await carica_select();
+          document.getElementById('cantante-id').value = canzone.idCantante;
+          document.getElementById('autore-id').value = canzone.idAutore;
+        } catch (error) {
+          alert('Errore: ' + error.message);
+        }
+      }
+
+      
+      document.getElementById("form-modifica").addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dati = {
+          titoloCanz: document.getElementById("titolo").value,
+          anno: document.getElementById("anno").value,
+          idCantante: document.getElementById("cantante-id").value,
+          idAutore: document.getElementById("autore-id").value
+        };
+        try {
+          const response = await fetch(`${API}/canzoni/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+          });
+          if (response.ok) {
+            alert('Canzone Aggiornata!');
+            location.href = 'index.html';
+          } else {
+            const error = await response.json();
+            alert('Errore: ' + (error.message || 'Aggiornamento Fallito'));
+          }
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      });
+
+      carica_canzone();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Dettaglio Disco</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Dettaglio Disco</h1>
+    <p><a href = "javascript:history.back()">Torna Indietro</a></p>
+
+    <h2>Canzoni nel Disco</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Canzone</th>
+          <th>Anno</th>
+          <th>Nome Cantante</th>
+          <th>Nome Autore</th>
+        </tr>
+      </thead>
+      <tbody id = "elenco-canzoni"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Musica/api/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_dettaglio() {
+        if (!id) {
+          alert('ID Canzone non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/dischi/${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-canzoni");
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Dettaglio Disco ${json.data[0].titoloAlbum}`;
+          json.data.forEach(canzone => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = canzone.titoloCanz;
+          row.insertCell(1).textContent = canzone.anno;
+          row.insertCell(2).textContent = canzone.nomeCantante;
+          row.insertCell(3).textContent = canzone.nomeAutore;
+        });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      }
+
+      carica_dettaglio();
+    </script>
+  </body>
+</html>

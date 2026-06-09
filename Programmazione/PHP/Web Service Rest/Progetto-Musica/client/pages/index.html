@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Catalogo Canznni</title>
+  </head>
+
+  <body>
+    <h1>Catalogo Canzoni</h1>
+    <p><a href = "aggiungi.html">Nuova Canzone</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Canzone</th>
+          <th>Anno</th>
+          <th>Nome Cantante</th>
+          <th>Nome Autore</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-canzoni"></tbody>
+    </table>
+
+    <script>
+    const API = 'http://localhost/Progetto-Musica/api/index.php';
+
+    async function carica_canzoni() {
+      try {
+        const response = await fetch(`${API}/canzoni`);
+        const json = await response.json();
+        if (!json.success) return alert('Errore nella chiamata API');
+        const tbody = document.getElementById("elenco-canzoni");
+        tbody.innerHTML = '';
+        json.data.forEach(canzone => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = canzone.titoloCanz;
+          row.insertCell(1).textContent = canzone.anno;
+          row.insertCell(2).textContent = canzone.nomeCantante;
+          row.insertCell(3).textContent = canzone.nomeAutore;
+          const action_cell = row.insertCell(4);
+          action_cell.innerHTML = `
+            <button onclick = "elimina_canzone(${canzone.idCanzone}, '${canzone.titoloCanz}')">Elimina</button>
+            <a href = "modifica.html?id=${canzone.idCanzone}">Modifica</a>
+            <a href = "disco.html?id=${canzone.idCanzone}">Vedi Dischi</a>
+          `;
+        });
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+
+    }
+
+    async function elimina_canzone(id, titolo) {
+      if (!confirm(`Sei Sicuro di Voler eliminare ${titolo} con ID: ${id}`)) { return; }
+      try {
+        await fetch(`${API}/canzoni/${id}`, 
+          {
+            method: 'DELETE'
+          }
+        );
+        carica_canzoni();
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+    }
+
+    carica_canzoni();
+  </script>
+  </body>
+</html>

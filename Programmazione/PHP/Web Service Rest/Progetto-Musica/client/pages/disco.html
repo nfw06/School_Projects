@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Dischi per Canzone</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Dischi che Contengono la Canzone</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Numero Serie</th>
+          <th>Titolo Album</th>
+          <th>Anno</th>
+          <th>Prezzo</th>
+          <th>Dettaglio</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-dischi"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Musica/api/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_dischi() {
+        if (!id) {
+          alert('ID Canzone non Specificato');
+          return;
+        }
+        try {
+          carica_canzone();
+          const response = await fetch(`${API}/dischi?canzone=${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-dischi");
+          tbody.innerHTML = '';
+          json.data.forEach(disco => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = disco.nroSerie;
+            row.insertCell(1).textContent = disco.titoloAlbum;
+            row.insertCell(2).textContent = disco.anno;
+            row.insertCell(3).textContent = disco.prezzo;
+            const link_cell = row.insertCell(4);
+            link_cell.innerHTML = `
+              <a href = "dettaglioDisco.html?id=${disco.nroSerie}">Vedi Dettaglio</a>
+            `;
+          });
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      async function carica_canzone() {
+        if (!id) {
+          alert('ID Canzone non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/canzoni/${id}`);
+          const json = await response.json();
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Dischi che contengono la Canzone ${json.data.titoloCanz}`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      carica_dischi();
+    </script>
+  </body>
+</html>

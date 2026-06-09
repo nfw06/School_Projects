@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Nuova Canzone</title>
+  </head>
+
+  <body>
+    <h1>Nuova Canzone</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <form id = "form-aggiungi">
+      <label>Titolo <input type = "text" id = "titolo" required></label><br />
+      <label>Anno: <input type = "number" id = "anno" required></label><br />
+      <label>Cantante <br /><select id = "cantante-id" required></select></label><br />
+      <label>Autore <br /><select id = "autore-id" required></select></label><br /><br />
+      <button type = "submit">Salva</button>
+    </form>
+
+    <script>
+      const API = 'http://localhost/Progetto-Musica/api/index.php';
+
+      async function carica_select() {
+        try {
+          let response = await fetch(`${API}/canzoni`);
+          let json = await response.json();
+          const selectCantante = document.getElementById("cantante-id");
+          const selectAutore = document.getElementById("autore-id");
+          selectCantante.innerHTML = '<option value = "">Seleziona Cantante</option>';
+          selectAutore.innerHTML = '<option value = "">Seleziona Autore</option>';
+          json.data.forEach(canzone => {
+            selectCantante.innerHTML += `<option value = "${canzone.idCantante}">${canzone.nomeCantante}</option>`;
+            selectAutore.innerHTML += `<option value = "${canzone.idAutore}">${canzone.nomeAutore}</option>`;
+          });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+        
+      }
+
+      document.getElementById("form-aggiungi").addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dati = {
+          titoloCanz: document.getElementById("titolo").value,
+          anno: document.getElementById("anno").value,
+          idCantante: document.getElementById("cantante-id").value,
+          idAutore: document.getElementById("autore-id").value
+        };
+        try {
+          const response = await fetch(`${API}/canzoni`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+          });
+          if (response.ok) {
+            alert('Canzone Aggiunta!');
+            location.href = 'index.html';
+          } else {
+            alert('Errore durante il Salvataggio');
+          }
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      });
+
+      carica_select();
+    </script>
+  </body>
+</html>
