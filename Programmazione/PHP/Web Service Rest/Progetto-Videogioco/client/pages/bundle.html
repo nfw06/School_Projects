@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Bundle per Videogioco</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Bundle che Contengono il Videogioco</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>idBundle</th>
+          <th>Nome Bundle</th>
+          <th>Tema</th>
+          <th>Prezzo</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-videogiochi"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Videogioco/server/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_videogiochi() {
+        if (!id) {
+          alert('ID Videogioco non Specificato');
+          return;
+        }
+        try {
+          carica_videogioco();
+          const response = await fetch(`${API}/bundle?gioco=${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-videogiochi");
+          tbody.innerHTML = '';
+          json.data.forEach(videogioco => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = videogioco.idBundle;
+            row.insertCell(1).textContent = videogioco.nomeBundle;
+            row.insertCell(2).textContent = videogioco.tema;
+            row.insertCell(3).textContent = videogioco.prezzo;
+          });
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      async function carica_videogioco() {
+        if (!id) {
+          alert('ID Videogioco non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/videogiochi/${id}`);
+          const json = await response.json();
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Bundle che contengono il Videogioco ${json.data.titoloGioco}`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      carica_videogiochi();
+    </script>
+  </body>
+</html>

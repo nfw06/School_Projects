@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Catalogo Videogiochi</title>
+  </head>
+
+  <body>
+    <h1>Catalogo Videogiochi</h1>
+    <p><a href = "aggiungi.html">Nuovo Videogioco</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Gioco</th>
+          <th>Anno</th>
+          <th>Nome Sviluppatore</th>
+          <th>Nazione</th>
+          <th>Nome Genere</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-videogiochi"></tbody>
+    </table>
+
+    <script>
+    const API = 'http://localhost/Progetto-Videogioco/server/index.php';
+
+    async function carica_videogiochi() {
+      try {
+        const response = await fetch(`${API}/videogiochi`);
+        const json = await response.json();
+        if (!json.success) return alert('Errore nella chiamata API');
+        const tbody = document.getElementById("elenco-videogiochi");
+        tbody.innerHTML = '';
+        json.data.forEach(videogioco => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = videogioco.titoloGioco;
+          row.insertCell(1).textContent = videogioco.anno;
+          row.insertCell(2).textContent = videogioco.nomeSviluppatore;
+          row.insertCell(3).textContent = videogioco.nazione;
+          row.insertCell(4).textContent = videogioco.nomeGenere;
+          const action_cell = row.insertCell(5);
+          action_cell.innerHTML = `
+            <button onclick = "elimina_videogioco(${videogioco.idVideogioco}, '${videogioco.titoloGioco}')">Elimina</button>
+            <a href = "bundle.html?id=${videogioco.idVideogioco}">Vedi Bundle</a>
+          `;
+        });
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+
+    }
+
+    async function elimina_videogioco(id, titolo) {
+      if (!confirm(`Sei Sicuro di Voler eliminare ${titolo} con ID: ${id}`)) { return; }
+      try {
+        await fetch(`${API}/videogiochi/${id}`, 
+          {
+            method: 'DELETE'
+          }
+        );
+        carica_videogiochi();
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+    }
+
+    carica_videogiochi();
+  </script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Nuovo Videogioco</title>
+  </head>
+
+  <body>
+    <h1>Nuovo Videogioco</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <form id = "form-aggiungi">
+      <label>Titolo <input type = "text" id = "titolo" required></label><br />
+      <label>Anno: <input type = "number" id = "anno" required></label><br />
+      <label>Sviluppatore <br /><select id = "sviluppatore-id" required></select></label><br />
+      <label>Genere <br /><select id = "genere-id" required></select></label><br /><br />
+      <button type = "submit">Salva</button>
+    </form>
+
+    <script>
+      const API = 'http://localhost/Progetto-Videogioco/server/index.php';
+
+      async function carica_select() {
+        try {
+          let response = await fetch(`${API}/videogiochi`);
+          let json = await response.json();
+          const selectSviluppatore = document.getElementById("sviluppatore-id");
+          const selectGenere = document.getElementById("genere-id");
+          selectSviluppatore.innerHTML = '<option value = "">Seleziona Sviluppatore</option>';
+          selectGenere.innerHTML = '<option value = "">Seleziona Genere</option>';
+          json.data.forEach(videogioco => {
+            selectSviluppatore.innerHTML += `<option value = "${videogioco.idSviluppatore}">${videogioco.nomeSviluppatore}</option>`;
+            selectGenere.innerHTML += `<option value = "${videogioco.idGenere}">${videogioco.nomeGenere}</option>`;
+          });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+        
+      }
+
+      document.getElementById("form-aggiungi").addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dati = {
+          titoloGioco: document.getElementById("titolo").value,
+          anno: document.getElementById("anno").value,
+          idSviluppatore: document.getElementById("sviluppatore-id").value,
+          idGenere: document.getElementById("genere-id").value
+        };
+        try {
+          const response = await fetch(`${API}/videogiochi`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+          });
+          if (response.ok) {
+            alert('Videogioco Aggiunta!');
+            location.href = 'index.html';
+          } else {
+            alert('Errore durante il Salvataggio');
+          }
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      });
+
+      carica_select();
+    </script>
+  </body>
+</html>
