@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Raccolte per Film</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Raccolte che Contengono il Film</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID Raccolta</th>
+          <th>Nome Raccolta</th>
+          <th>Tema</th>
+          <th>Curatore</th>
+          <th>Prezzo</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-raccolte"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Filmoteca/server/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_raccolte() {
+        if (!id) {
+          alert('ID Canzone non Specificato');
+          return;
+        }
+        try {
+          carica_canzone();
+          const response = await fetch(`${API}/raccolte?film=${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-raccolte");
+          tbody.innerHTML = '';
+          json.data.forEach(raccolta => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = raccolta.idRaccolta;
+            row.insertCell(1).textContent = raccolta.nomeRaccolta;
+            row.insertCell(2).textContent = raccolta.tema;
+            row.insertCell(3).textContent = raccolta.curatore;
+            row.insertCell(4).textContent = raccolta.prezzo;
+            
+          });
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      async function carica_canzone() {
+        if (!id) {
+          alert('ID Film non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/film/${id}`);
+          const json = await response.json();
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Raccolte che contengono il Film ${json.data.titoloFilm}`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      carica_raccolte();
+    </script>
+  </body>
+</html>

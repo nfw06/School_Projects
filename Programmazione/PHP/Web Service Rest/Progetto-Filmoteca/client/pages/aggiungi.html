@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Nuovo Film</title>
+  </head>
+
+  <body>
+    <h1>Nuovo Film</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <form id = "form-aggiungi">
+      <label>Titolo Film <input type = "text" id = "titolo" required></label><br />
+      <label>Anno: <input type = "number" id = "anno" required></label><br />
+      <label>Regista <br /><select id = "regista-id" required></select></label><br />
+      <label>Genere <br /><select id = "genere-id" required></select></label><br /><br />
+      <button type = "submit">Salva</button>
+    </form>
+
+    <script>
+      const API = 'http://localhost/Progetto-Filmoteca/server/index.php';
+
+      async function carica_select() {
+        try {
+          let response = await fetch(`${API}/film`);
+          let json = await response.json();
+          const selectRegista = document.getElementById("regista-id");
+          const selectGenere = document.getElementById("genere-id");
+          selectRegista.innerHTML = '<option value = "">Seleziona Regista</option>';
+          selectGenere.innerHTML = '<option value = "">Seleziona Genere</option>';
+          json.data.forEach(film => {
+            selectRegista.innerHTML += `<option value = "${film.idRegista}">${film.nomeRegista}</option>`;
+            selectGenere.innerHTML += `<option value = "${film.idGenere}">${film.nomeGenere}</option>`;
+          });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+        
+      }
+
+      document.getElementById("form-aggiungi").addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dati = {
+          titoloFilm: document.getElementById("titolo").value,
+          anno: document.getElementById("anno").value,
+          idRegista: document.getElementById("regista-id").value,
+          idGenere: document.getElementById("genere-id").value
+        };
+        try {
+          const response = await fetch(`${API}/film`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+          });
+          if (response.ok) {
+            alert('Film Aggiunta!');
+            location.href = 'index.html';
+          } else {
+            alert('Errore durante il Salvataggio');
+          }
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      });
+
+      carica_select();
+    </script>
+  </body>
+</html>

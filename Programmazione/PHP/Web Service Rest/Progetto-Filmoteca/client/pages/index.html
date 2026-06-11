@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Catalogo Film</title>
+  </head>
+
+  <body>
+    <h1>Catalogo Film</h1>
+    <p><a href = "aggiungi.html">Nuovo Film</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Film</th>
+          <th>Anno</th>
+          <th>Nome Regista</th>
+          <th>Nazionalita</th>
+          <th>Nome Genere</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-film"></tbody>
+    </table>
+
+    <script>
+    const API = 'http://localhost/Progetto-Filmoteca/server/index.php';
+
+    async function carica_film() {
+      try {
+        const response = await fetch(`${API}/film`);
+        const json = await response.json();
+        console.log(json);
+        if (!json.success) return alert('Errore nella chiamata API');
+        const tbody = document.getElementById("elenco-film");
+        tbody.innerHTML = '';
+        json.data.forEach(film => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = film.titoloFilm;
+          row.insertCell(1).textContent = film.anno;
+          row.insertCell(2).textContent = film.nomeRegista;
+          row.insertCell(3).textContent = film.nazionalita;
+          row.insertCell(4).textContent = film.nomeGenere;
+          const action_cell = row.insertCell(5);
+          action_cell.innerHTML = `
+            <button onclick = "elimina_film(${film.idFilm}, '${film.titoloFilm}')">Elimina</button>
+            <a href = "raccolta.html?id=${film.idFilm}">Vedi Raccolte</a>
+          `;
+        });
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+
+    }
+
+    async function elimina_film(id, titolo) {
+      if (!confirm(`Sei Sicuro di Voler eliminare ${titolo} con ID: ${id}`)) { return; }
+      try {
+        await fetch(`${API}/film/${id}`, 
+          {
+            method: 'DELETE'
+          }
+        );
+        carica_film();
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+    }
+
+    carica_film();
+  </script>
+  </body>
+</html>
