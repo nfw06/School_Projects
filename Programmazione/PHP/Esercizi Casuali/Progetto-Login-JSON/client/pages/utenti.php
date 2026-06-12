@@ -1,4 +1,5 @@
 <?php
+  declare(strict_types = 1);
   session_start();
   require_once __DIR__ . '/../../config.php';
 
@@ -37,17 +38,18 @@
         <?php foreach($json->utenti as $user): ?>
         <tr>
           <td><?= $user->id ?></td>
-          td><?= $user->nome ?></td>
-          td><?= $user->cognome ?></td>
-          td><?= $user->email ?></td>
-          td><?= $user->eta ?></td>
-          td><?= $user->attivo  ? 'Si' : 'No' ?></td>
-          td><?= implode(', ', $user->ruoli) ?></td>
+          <td><?= $user->nome ?></td>
+          <td><?= $user->cognome ?></td>
+          <td><?= $user->email ?></td>
+          <td><?= $user->password ?></td>
+          <td><?= $user->eta ?></td>
+          <td><?= $user->attivo  ? 'Si' : 'No' ?></td>
+          <td><?= implode(', ', $user->ruoli) ?></td>
         </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
-    < a href = "mostra.php">Torna al Profilo</a>
+    <a href = "mostra.php">Torna al Profilo</a>
   </body>
 </html>
 

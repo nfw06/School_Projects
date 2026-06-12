@@ -1,2 +1,2 @@
 <?php
-  DEFINE('JSON_PATH', __DIR__ . 'server/data/utenti.json');
+  DEFINE('JSON_PATH', __DIR__ . '/server/data/utenti.json');

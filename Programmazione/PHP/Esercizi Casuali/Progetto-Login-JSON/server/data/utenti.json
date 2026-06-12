@@ -1,34 +1,54 @@
 {
-  "utenti": [
-    {
-      "id": 1,
-      "nome": "Mario",
-      "cognome": "Rossi",
-      "email": "mario.rossi@example.com",
-      "password": "1234",
-      "eta": 34,
-      "attivo": true,
-      "ruoli": ["admin", "editor"]
-    },
-    {
-      "id": 2,
-      "nome": "Laura",
-      "cognome": "Bianchi",
-      "email": "laura.bianchi@example.com",
-      "password": "password",
-      "eta": 28,
-      "attivo": true,
-      "ruoli": ["user"]
-    },
-    {
-      "id": 3,
-      "nome": "Giovanni",
-      "cognome": "Verdi",
-      "email": "giovanni.verdi@example.com",
-      "password": "qwerty",
-      "eta": 45,
-      "attivo": false,
-      "ruoli": ["user", "moderator"]
-    }
-  ]
+    "utenti": [
+        {
+            "id": 1,
+            "nome": "Mario",
+            "cognome": "Rossi",
+            "email": "mario.rossi@example.com",
+            "password": "1234",
+            "eta": 34,
+            "attivo": true,
+            "ruoli": [
+                "admin",
+                "editor"
+            ]
+        },
+        {
+            "id": 2,
+            "nome": "Laura",
+            "cognome": "Bianchi",
+            "email": "laura.bianchi@example.com",
+            "password": "password",
+            "eta": 28,
+            "attivo": true,
+            "ruoli": [
+                "user"
+            ]
+        },
+        {
+            "id": 3,
+            "nome": "Giovanni",
+            "cognome": "Verdi",
+            "email": "giovanni.verdi@example.com",
+            "password": "qwerty",
+            "eta": 45,
+            "attivo": false,
+            "ruoli": [
+                "user",
+                "moderator"
+            ]
+        },
+        {
+            "id": 4,
+            "nome": "Willy",
+            "cognome": "Njoki",
+            "email": "ciao@mail.com",
+            "password": "a",
+            "eta": 2,
+            "attivo": true,
+            "ruoli": [
+                "user"
+            ]
+        }
+    ]
 }

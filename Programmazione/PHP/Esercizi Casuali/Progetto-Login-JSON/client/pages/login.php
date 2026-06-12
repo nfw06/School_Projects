@@ -3,13 +3,24 @@
   session_start();
   require_once __DIR__ . '/../../config.php';
 
-  $username = $_POST['username'];
+  if (!isset($_POST['user'], $_POST['psw'])) {
+    header('Location: index.php?error=1');
+    exit();
+  }
+
+  $username = trim($_POST['user']);
   $psw = $_POST['psw'];
 
-  $json = json_decode(file_get_contents(JSON_PATH));
+  $file = file_get_contents(JSON_PATH);
+  if ($file === false) {
+    header('Location: index.php?error=1');
+    exit();
+  }
+  
+  $json = json_decode($file);
   $user = null;
 
-  foreach($json->utente as $utente) {
+  foreach($json->utenti as $utente) {
     if (($utente->nome == $username) && ($utente->password == $psw) && ($utente->attivo)) {
       $user = $utente;
       break;
