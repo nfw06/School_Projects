@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Collane per Libro</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Collane che Contengono il Libro</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID Collana</th>
+          <th>Nome Collana</th>
+          <th>Editore</th>
+          <th>prezzo</th>
+          <th>Dettaglio</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-collane"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Biblioteca/server/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_collane() {
+        if (!id) {
+          alert('ID Libro non Specificato');
+          return;
+        }
+        try {
+          carica_libro();
+          const response = await fetch(`${API}/collane?libro=${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-collane");
+          tbody.innerHTML = '';
+          json.data.forEach(collana => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = collana.idCollana;
+            row.insertCell(1).textContent = collana.nomeCollana;
+            row.insertCell(2).textContent = collana.editore;
+            row.insertCell(3).textContent = collana.prezzo;
+            const link_cell = row.insertCell(4);
+            link_cell.innerHTML = `
+              <a href = "dettaglioCollana.html?id=${collana.idCollana}">Vedi Dettaglio</a>
+            `;
+          });
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      async function carica_libro() {
+        if (!id) {
+          alert('ID Libro non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/libri/${id}`);
+          const json = await response.json();
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Collane che contengono il Libro ${json.data.titoloLibro}`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+      }
+
+      carica_collane();
+    </script>
+  </body>
+</html>

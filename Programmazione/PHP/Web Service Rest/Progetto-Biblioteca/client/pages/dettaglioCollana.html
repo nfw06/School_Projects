@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Dettaglio Collana</title>
+  </head>
+
+  <body>
+    <h1 id = "header1">Dettaglio Disco</h1>
+    <p><a href = "javascript:history.back()">Torna Indietro</a></p>
+
+    <h2>Libri della Collana</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Libro</th>
+          <th>Anno</th>
+          <th>Nome Autore</th>
+          <th>Nome Genere</th>
+        </tr>
+      </thead>
+      <tbody id = "elenco-libri"></tbody>
+    </table>
+
+    <script>
+      const API = 'http://localhost/Progetto-Biblioteca/server/index.php';
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      async function carica_dettaglio() {
+        if (!id) {
+          alert('ID Libro non Specificato');
+          return;
+        }
+        try {
+          const response = await fetch(`${API}/collane/${id}`);
+          const json = await response.json();
+          const tbody = document.getElementById("elenco-libri");
+          const header1 = document.getElementById("header1");
+          header1.innerHTML = `Dettaglio Collana ${json.data[0].nomeCollana}`;
+          json.data.forEach(libro => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = libro.titoloLibro;
+          row.insertCell(1).textContent = libro.annoPubbl;
+          row.insertCell(2).textContent = libro.nomeAutore;
+          row.insertCell(3).textContent = libro.nomeGenere;
+        });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      }
+
+      carica_dettaglio();
+    </script>
+  </body>
+</html>

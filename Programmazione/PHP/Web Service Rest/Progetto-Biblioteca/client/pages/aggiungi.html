@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Nuovo Libro</title>
+  </head>
+
+  <body>
+    <h1>Nuovo Libro</h1>
+
+    <p><a href = "index.html">Torna al Catalogo</a></p>
+
+    <form id = "form-aggiungi">
+      <label>Titolo Libro <input type = "text" id = "titolo" required></label><br />
+      <label>Anno Pubblicazione: <input type = "number" id = "anno" required></label><br />
+      <label>Autore <br /><select id = "autore-id" required></select></label><br />
+      <label>Genere <br /><select id = "genere-id" required></select></label><br /><br />
+      <button type = "submit">Salva</button>
+    </form>
+
+    <script>
+      const API = 'http://localhost/Progetto-Biblioteca/server/index.php';
+
+      async function carica_select() {
+        try {
+          let response = await fetch(`${API}/libri`);
+          let json = await response.json();
+          const selectAutore = document.getElementById("autore-id");
+          const selectGenere = document.getElementById("genere-id");
+          selectAutore.innerHTML = '<option value = "">Seleziona Autore</option>';
+          selectGenere.innerHTML = '<option value = "">Seleziona Genere</option>';
+          json.data.forEach(libro => {
+            selectAutore.innerHTML += `<option value = "${libro.idAutore}">${libro.nomeAutore}</option>`;
+            selectGenere.innerHTML += `<option value = "${libro.idGenere}">${libro.nomeGenere}</option>`;
+          });
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+        
+      }
+
+      document.getElementById("form-aggiungi").addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dati = {
+          titoloLibro: document.getElementById("titolo").value,
+          annoPubbl: document.getElementById("anno").value,
+          idAutore: document.getElementById("autore-id").value,
+          idGenere: document.getElementById("genere-id").value
+        };
+        try {
+          const response = await fetch(`${API}/libri`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dati)
+          });
+          if (response.ok) {
+            alert('Libro Aggiunta!');
+            location.href = 'index.html';
+          } else {
+            alert('Errore durante il Salvataggio');
+          }
+        } catch (error) {
+            alert('Errore: ' + error.message);
+        }
+      });
+
+      carica_select();
+    </script>
+  </body>
+</html>

@@ -3,20 +3,20 @@
 
   require_once __DIR__ . '/./Database.php';
 
-  class Disco {
+  class Collana {
     private mysqli $connection;
 
     public function __construct() {
       $this->connection = Database::getInstance()->getConnection();
     }
 
-    public function getByIdCanzone(int $id): ?array {
+    public function getByIdLibro(int $id): ?array {
       $query = "
-        SELECT disc.*
-        FROM disco AS disc
-        INNER JOIN contiene AS cont ON cont.nroSerieDisco = disc.nroSerie
-        INNER JOIN canzone AS canz ON canz.idCanzone = cont.codiceReg
-        WHERE canz.idCanzone = ?
+        SELECT c.*
+        FROM collana AS c
+        INNER JOIN appartiene AS a ON a.idCollana = c.idCollana
+        INNER JOIN libro AS l ON l.idLibro = a.idLibro
+        WHERE l.idLibro = ?
       ";
       try {
         $stmt = $this->connection->prepare($query);
@@ -27,7 +27,7 @@
         http_response_code(500);
         echo json_encode([
           'success' => false,
-          'message' => 'Errore nel getByIdCanzone() di Canzone',
+          'message' => 'Errore nel getByIdLibro() di Collana',
           'error' => $error->getMessage()
         ]);
         exit;
@@ -36,13 +36,13 @@
 
     public function getById(int $id): ?array {
       $query = "
-        SELECT disc.*, canz.*, aut.*, cant.*
-        FROM disco AS disc
-        INNER JOIN contiene AS cont ON cont.nroSerieDisco = disc.nroSerie
-        INNER JOIN canzone AS canz ON canz.idCanzone = cont.codiceReg
-        INNER JOIN autore AS aut ON aut.idAutore = canz.idAutore
-        INNER JOIN cantante AS cant ON cant.idCantante = canz.idCantante
-        WHERE disc.nroSerie = ?
+        SELECT c.*, l.*, a.*, g.*
+        FROM collana AS c
+        INNER JOIN appartiene AS app ON app.idCollana = c.idCollana
+        INNER JOIN libro AS l ON l.idLibro = app.idLibro
+        INNER JOIN autore AS a ON a.idAutore = l.idAutore
+        INNER JOIN genere AS g ON g.idGenere = l.idGenere
+        WHERE c.idCollana = ?
       ";
       try {
         $stmt = $this->connection->prepare($query);
@@ -53,7 +53,7 @@
         http_response_code(500);
         echo json_encode([
           'success' => false,
-          'message' => 'Errore nel getById() di Canzone',
+          'message' => 'Errore nel getById() di Collana',
           'error' => $error->getMessage()
         ]);
         exit;

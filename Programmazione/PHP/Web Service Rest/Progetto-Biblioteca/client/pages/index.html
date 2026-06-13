@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Catalogo Libri</title>
+  </head>
+
+  <body>
+    <h1>Catalogo Libri</h1>
+    <p><a href = "aggiungi.html">Nuovo Libro</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Titolo Libro</th>
+          <th>Anno Pubblicazione</th>
+          <th>Nome Autore</th>
+          <th>Nome Genere</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+
+      <tbody id = "elenco-libri"></tbody>
+    </table>
+
+    <script>
+    const API = 'http://localhost/Progetto-Biblioteca/server/index.php';
+
+    async function carica_libri() {
+      try {
+        const response = await fetch(`${API}/libri`);
+        const json = await response.json();
+        if (!json.success) return alert('Errore nella chiamata API');
+        const tbody = document.getElementById("elenco-libri");
+        tbody.innerHTML = '';
+        json.data.forEach(libro => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = libro.titoloLibro;
+          row.insertCell(1).textContent = libro.annoPubbl;
+          row.insertCell(2).textContent = libro.nomeAutore;
+          row.insertCell(3).textContent = libro.nomeGenere;
+          const action_cell = row.insertCell(4);
+          action_cell.innerHTML = `
+            <button onclick = "elimina_libro(${libro.idLibro}, '${libro.titoloLibro}')">Elimina</button>
+            <a href = "modifica.html?id=${libro.idLibro}">Modifica</a>
+            <a href = "collana.html?id=${libro.idLibro}">Vedi Collane</a>
+          `;
+        });
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+
+    }
+
+    async function elimina_libro(id, titolo) {
+      if (!confirm(`Sei Sicuro di Voler eliminare ${titolo} con ID: ${id}`)) { return; }
+      try {
+        await fetch(`${API}/libri/${id}`, 
+          {
+            method: 'DELETE'
+          }
+        );
+        carica_libri();
+      } catch (error) {
+          alert('Error: ' + error.message);
+      }
+    }
+
+    carica_libri();
+  </script>
+  </body>
+</html>
